@@ -55,10 +55,10 @@ ARCHITECTURE behavior OF serealtb IS
          clk 	: IN  std_logic;
          reset : IN  std_logic;
          DIN2 	: IN  std_logic;
-         DOUT2 : OUT  std_logic_vector(7 downto 0);
-			clk_out1 : out std_logic;
-			sel1     : out std_logic_vector(2 downto 0);
-			dout3    : out std_logic_vector(7 downto 0)
+         DOUT2 : OUT  std_logic_vector(7 downto 0)
+			
+
+			
         );
     END COMPONENT;
     
@@ -72,7 +72,6 @@ ARCHITECTURE behavior OF serealtb IS
  	--Outputs
    signal DOUT1 : std_logic;
 	signal DOUT2 : std_logic_vector(7 downto 0);
-	signal clk_out1 : std_logic;
 	
 	
 
@@ -95,8 +94,8 @@ BEGIN
           clk => clk,
           reset => reset,
           DIN2 => DIN2,
-          DOUT2 => DOUT2,
-			 clk_out1=>clk_out1
+          DOUT2 => DOUT2
+			
  			 );
    -- Clock process definitions
 	din2<=dout1;
