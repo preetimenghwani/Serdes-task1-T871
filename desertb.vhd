@@ -59,8 +59,8 @@ constant testpattern : std_logic_vector(7 downto 0):= "10101100";
          reset : IN  std_logic:='0';
          DIN2 	: IN  std_logic:='0';
          DOUT2 : OUT  std_logic_vector(7 downto 0);
-		   clk_out1       :  out std_logic:='0';
-			link_trained   :  out std_logic:='0'
+         clk_out1      :  out std_logic:='0';
+	link_trained   :  out std_logic:='0'
 			
 
 			
@@ -82,9 +82,9 @@ constant testpattern : std_logic_vector(7 downto 0):= "10101100";
   
   signal clk_out1  :  std_logic:='0';
   signal link_trained: std_logic:='0';
-  signal counter		:	std_logic_vector(2 downto 0):= (others => '0');
-  signal sel    		:	std_logic_vector(2 downto 0):= (others => '0');
-  signal DOUT    	:  std_logic_vector(7 downto 0) := (others => '0');
+  signal counter:	std_logic_vector(2 downto 0):= (others => '0');
+  signal sel    :	std_logic_vector(2 downto 0):= (others => '0');
+  signal DOUT    :  std_logic_vector(7 downto 0) := (others => '0');
   signal clk_out	   :  std_logic:='0';
   signal sync_rst   :  std_logic:='0';
   signal linked     :  std_logic:='0';
@@ -136,12 +136,6 @@ BEGIN
 	reset <= '0';
 	
 	DIN1<="11100010";
-	wait for 335ns;
-	DIN1<="10111111";
-	wait for 80ns;
-	DIN1<="10101010";
-	WAIT FOR 80ns;
-	DIN1<="11111110";
   
      wait;
 	end process;
