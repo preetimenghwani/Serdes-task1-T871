@@ -1,4 +1,4 @@
-----------------------------------------------------------------------------------
+  ----------------------------------------------------------------------------------
 -- Company: 
 -- Engineer: 
 -- 
@@ -27,8 +27,8 @@ use ieee.numeric_std.all;
 ENTITY serealisercomb IS
     port (
         din_ser    : IN STD_LOGIC_VECTOR(11 DOWNTO 0):=(others=>'0'); --input to serializer
-        clk        : IN STD_LOGIC;                     --high speed input clocl
-		  clk_in     : in std_logic;                     --low speed input clock 
+        clk        : IN STD_LOGIC;                                    --high speed input clocl
+		  clk_in     : in std_logic;                                    --low speed input clock 
         reset_ser  : IN STD_LOGIC;                     --reset signal for serializer
 		  depth_sel  : in std_logic_vector(1 downto 0):=(others=>'0');                          --for selecting bit depth depth_sel 4=> 8 bit ,2=> 10 bit, 0=> 12 bit                        
         dout_ser   : OUT STD_LOGIC;                    --output of serializer
