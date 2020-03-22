@@ -139,9 +139,9 @@ bit_depth<= to_integer(unsigned(depth_sel));
 				
 	
 clk_out <= not counter(2);
-clk_in<= not counter(2);
+clk_in  <= not counter(2);
 --clk_out<=clk_in;
-      p_clk_out:process(clk_in,reset_deser)
+      p_clk_out:process(clk_in)
 		begin		
 		if(rising_edge(clk_in)) then
 			if(reset_deser='1') then 
