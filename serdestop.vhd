@@ -35,6 +35,7 @@ use unisim.vcomponents.all;
 entity serdestop is
 port(
       clk_in_final: in std_logic;
+		clk_in_parallel:in std_logic;
 		reset_ser:in std_logic;
 		reset_deser:in std_logic;
 		depth_sel:in std_logic_vector(1 downto 0):=(others=>'0');
@@ -64,29 +65,29 @@ COMPONENT serealisercomb
          clk 	              : IN  std_logic:='0';
          reset_deser         : IN  std_logic:='0';
          DIN_deser 	        : IN  std_logic:='0';
-			depth_sel           : in std_logic_vector(1 downto 0):=(others=>'0');
+			depth_sel           : in  std_logic_vector(1 downto 0):=(others=>'0');
          clk_out             : out std_logic:='0';
 	      link_trained        : out std_logic:='0';
 			dout_deser          : out std_logic_vector(11 downto 0):=(others=>'0')
 			);
     END COMPONENT;
 	 
---signal linked: std_logic:='0';
---signal din_deser_buf : std_logic:='0';
---signal clk_in1: std_logic:='0';
+   --signal linked: std_logic:='0';
+   --signal din_deser_buf : std_logic:='0';
+   --signal clk_in1: std_logic:='0';
    signal din_ser     	: std_logic_vector(11 downto 0) := (others => '0');
    signal clk        	: std_logic := '0';
 	signal clk_in        : std_logic:='0';
-  -- signal reset_deser  	: std_logic := '1';
-	--signal reset_ser  	: std_logic := '1';
+  -- signal reset_deser : std_logic := '1';
+  --signal reset_ser  	: std_logic := '1';
 	signal DIN_deser   	: std_logic :='0';
 	signal ready         : std_logic:='0';
   -- signal depth_sel     : integer;
 
  	--Outputs
-   signal dout_ser : std_logic:='0';
-	signal dout_deser : std_logic_vector(11 downto 0):= (others => '0');
-	signal clk_out    : std_logic:='0';
+   signal dout_ser    : std_logic:='0';
+	signal dout_deser  : std_logic_vector(11 downto 0):= (others => '0');
+	signal clk_out     : std_logic:='0';
 	signal link_trained: std_logic:='0';
 
 
@@ -120,18 +121,9 @@ port map(
 			ready_final<=link_trained;
 			din_ser<=data_in;
 			data_out<=dout_deser;
-			clk_in<=clk_out;
+			clk_in<=clk_in_parallel;
 			clk<=clk_in_final;
-			clk_out_final<=clk_in;
-			
-			
-
-	 
-        -- din_ser=>dout_deser;
-	     -- link_trained=>ready;
-	      --clk_out=>clk_in;
---clk_in1<=clk_out;
-
+			clk_out_final<=clk_out;
 
 end rtl;
 
