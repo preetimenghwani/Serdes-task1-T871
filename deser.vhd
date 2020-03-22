@@ -54,7 +54,8 @@ signal linked         : std_logic:='0';
 signal clk_in         : std_logic:='0';
 CONSTANT test_pattern : std_logic_vector (11 DOWNTO 0) := "101011001111";
 signal bit_depth: integer;
-
+--signal dout_unclk     : std_logic_vector(11 downto 0):=(others=>'0');
+--signal din_clked : std_logic:='0';
 begin
 
 --sync_rst <= reset when rising_edge(clk);
@@ -106,22 +107,34 @@ end if;
 	 end process;
 				
 bit_depth<= to_integer(unsigned(depth_sel));	
-		
+
+--din_clked<=din_deser when rising_edge(clk);
+ --dout<=dout_unclk when rising_edge(clk);
 	
 	sel<=counter;
-   
-   dout <=  (din_deser  & dout(10) & dout(9) & dout(8) & dout(7) & dout(6) & dout(5) & dout(4)& dout(3)& dout(2)& dout(1)& dout(0))  when (sel="0000") else
-            (dout(11)  & din_deser & dout(9) & dout(8) & dout(7) & dout(6) & dout(5) & dout(4)& dout(3)& dout(2)& dout(1)& dout(0)) when (sel="0001") else
-            (dout(11) & dout(10) & din_deser & dout(8) & dout(7) & dout(6) & dout(5) & dout(4)& dout(3)& dout(2)& dout(1)& dout(0)) when (sel="0010") else
-            (dout(11)  & dout(10) & dout(9) &din_deser & dout(7) & dout(6) & dout(5) & dout(4)& dout(3)& dout(2)& dout(1)& dout(0)) when (sel="0011") else
-            (dout(11)  & dout(10) & dout(9) & dout(8) & din_deser & dout(6) & dout(5) & dout(4)& dout(3)& dout(2)& dout(1)& dout(0)) when (sel="0100") else
-            (dout(11)  & dout(10) & dout(9) & dout(8) & dout(7) & din_deser & dout(5) & dout(4)& dout(3)& dout(2)& dout(1)& dout(0)) when (sel="0101") else
-            (dout(11) & dout(10) & dout(9) & dout(8) & dout(7) & dout(6) & din_deser & dout(4)& dout(3)& dout(2)& dout(1)& dout(0)) when (sel="0110") else
-            (dout(11) & dout(10) & dout(9) & dout(8) & dout(7) & dout(6) & dout(5) & din_deser& dout(3)& dout(2)& dout(1)& dout(0)) when (sel="0111") else
-				(dout(11)  & dout(10) & dout(9) & dout(8) & dout(7) & dout(6) & dout(5) & dout(4)& din_deser& dout(2)& dout(1)& dout(0)) when (sel="1000") else
-				(dout(11)  & dout(10) & dout(9) & dout(8) & dout(7) & dout(6) & dout(5) & dout(4)& dout(3)& din_deser& dout(1)& dout(0)) when (sel="1001") else
-				(dout(11)  & dout(10) & dout(9) & dout(8) & dout(7) & dout(6) & dout(5) & dout(4)& dout(3)& dout(2)& din_deser& dout(0)) when (sel="1010") else
-				(dout(11)  & dout(10) & dout(9) & dout(8) & dout(7) & dout(6) & dout(5) & dout(4)& dout(3)& dout(2)& dout(1)& din_deser) when (sel="1011"); 
+   process(clk)
+	begin
+	if(rising_edge(clk)) then
+		if(reset_deser='1') then
+			dout<="000000000000";
+		else
+			if(sel="0000") then dout(11)<=din_deser;
+			elsif(sel="0001") then dout(10)<=(DIN_deser);
+			elsif(sel="0010") then dout(9)<=(DIN_deser);
+			elsif(sel="0011") then dout(8)<=din_deser;
+			elsif(sel="0100") then dout(7)<=din_deser;
+			elsif(sel="0101") then dout(6)<=din_deser;
+		   elsif(sel="0110") then dout(5)<=din_deser;
+			elsif(sel="0111") then dout(4)<=din_deser;
+			elsif(sel="1000") then dout(3)<=din_deser;
+			elsif(sel="1001") then dout(2)<=din_deser;
+			elsif(sel="1010") then dout(1)<=din_deser;
+			elsif(sel="1011") then dout(0)<=din_deser;
+			end if;
+		end if;
+	end if;
+	end process;
+
 				
 				
 	
