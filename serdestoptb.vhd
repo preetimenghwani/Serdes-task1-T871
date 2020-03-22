@@ -41,14 +41,15 @@ ARCHITECTURE behavior OF serdestoptb IS
  
     COMPONENT serdestop
     port(
-         clk_in_final : IN  std_logic;
-         reset_ser    : IN  std_logic;
-         reset_deser  : IN  std_logic;
-         depth_sel    : in std_logic_vector(1 downto 0):=(others=>'0');
-         data_in     : IN  std_logic_vector(11 downto 0):=(others=>'0');
-         data_out      : OUT  std_logic_vector(11 downto 0):=(others=>'0');
-         clk_out_final : OUT  std_logic;
-         ready_final   : OUT  std_logic
+         clk_in_final    : IN  std_logic;
+			clk_in_parallel : in std_logic;
+         reset_ser       : IN  std_logic;
+         reset_deser     : IN  std_logic;
+         depth_sel       : in std_logic_vector(1 downto 0):=(others=>'0');
+         data_in         : IN  std_logic_vector(11 downto 0):=(others=>'0');
+         data_out        : OUT  std_logic_vector(11 downto 0):=(others=>'0');
+         clk_out_final   : OUT  std_logic;
+         ready_final     : OUT  std_logic
         );
 	
 	 
@@ -57,25 +58,28 @@ ARCHITECTURE behavior OF serdestoptb IS
 
    --Inputs
    signal clk_in_final : std_logic := '0';
+	signal clk_in_parallel: std_logic:='0';
    signal reset_ser : std_logic := '0';
    signal reset_deser : std_logic := '0';
    signal depth_sel : std_logic_vector(1 downto 0):=(others=>'0');
    signal data_in : std_logic_vector(11 downto 0):=(others=>'0');
 
  	--Outputs
-   signal data_out : std_logic_vector(11 downto 0):=(others=>'0');
+   signal data_out      : std_logic_vector(11 downto 0):=(others=>'0');
    signal clk_out_final : std_logic;
    signal ready_final : std_logic;
 
    -- Clock period definitions
-   constant clk_in_final_period : time := 10 ns;
+   constant clk_in_final_period : time :=10 ns;
    --constant clk_out_period : time := 10 ns;
+	constant clk_in_parallel_period : time :=120 ns;
  
 BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
    uut: serdestop port MAP (
           clk_in_final => clk_in_final,
+			 clk_in_parallel=> clk_in_parallel,
           reset_ser => reset_ser,
           reset_deser => reset_deser,
           depth_sel => depth_sel,
@@ -92,6 +96,14 @@ BEGIN
 		wait for clk_in_final_period/2;
 		clk_in_final <= '1';
 		wait for clk_in_final_period/2;
+   end process;
+	
+	clk_in_parallel_process :process
+   begin
+		clk_in_parallel <= '0';
+		wait for clk_in_parallel_period/2;
+		clk_in_parallel <= '1';
+		wait for clk_in_parallel_period/2;
    end process;
  
  
