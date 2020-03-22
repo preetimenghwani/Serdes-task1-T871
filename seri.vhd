@@ -67,10 +67,12 @@ BEGIN
 	 
 bit_depth<= to_integer(unsigned(depth_sel));
     sel <= counter;
-    p_clk_out : PROCESS (clk_in, reset_ser)
+    p_clk_out : PROCESS (clk_in)
     BEGIN
         IF (rising_edge(clk_in)) THEN
-            IF (reset_ser = '0') THEN
+		   if(reset_ser='1') then
+					din<="000000000000";	
+            else
 					if(ready='1') then
 						din(11 downto bit_depth) <= din_ser(11-bit_depth downto 0); 
 					else 
@@ -79,6 +81,8 @@ bit_depth<= to_integer(unsigned(depth_sel));
             END IF;
         END IF;
     END PROCESS;
+	 
+	 --doutser clked =doutser rising edge of clock
  
  
     PROCESS (DIN, sel)
@@ -97,7 +101,7 @@ bit_depth<= to_integer(unsigned(depth_sel));
                 WHEN"1010" => dout_ser <= DIN(1);
                 WHEN"1011" => dout_ser <= DIN(0);
                 WHEN OTHERS => 
-                    dout_ser <= 'Z';
+                    dout_ser <= '0';
             END CASE;
         END PROCESS;
  
