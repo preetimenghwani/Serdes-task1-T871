@@ -25,7 +25,7 @@ use unisim.vcomponents.all;
 
 entity serdestop is
 port(
-      clk_in         : in std_logic;
+                clk_in                   : in std_logic;
 		reset_ser      : in std_logic;
 		reset_deser    : in std_logic;
 		depth_sel      : in std_logic_vector(2 downto 0):=(others=>'0');
@@ -41,10 +41,10 @@ architecture rtl of serdestop is
 COMPONENT serializer
     port(
          din_ser        : IN  std_logic_vector(11 downto 0):=(others=>'0');
-			ready          : in std_logic:='0';
+         ready          : in std_logic:='0';
          clk_in_ser     : IN  std_logic:='0';
-			depth_sel      : in std_logic_vector(2 downto 0):=(others=>'0');
-			clk_out_ser    : out  std_logic:='0';
+         depth_sel      : in std_logic_vector(2 downto 0):=(others=>'0');
+	 clk_out_ser    : out  std_logic:='0';
          reset_ser      : IN  std_logic:='0';
          dout_ser       : OUT  std_logic:='0'
 			
@@ -53,26 +53,26 @@ COMPONENT serializer
 	 
 	 COMPONENT deserializer 
     port(
-         clk_in_deser 	              : IN  std_logic:='0';
+         clk_in_deser 	     : IN  std_logic:='0';
          reset_deser         : IN  std_logic:='0';
-         DIN_deser 	        : IN  std_logic:='0';
-			depth_sel           : in  std_logic_vector(2 downto 0):=(others=>'0');
+         DIN_deser 	     : IN  std_logic:='0';
+	 depth_sel           : in  std_logic_vector(2 downto 0):=(others=>'0');
          clk_out_deser       : out std_logic:='0';
-	      link_trained        : out std_logic:='0';
-			dout_deser          : out std_logic_vector(11 downto 0):=(others=>'0')
+	 link_trained        : out std_logic:='0';
+         dout_deser          : out std_logic_vector(11 downto 0):=(others=>'0')
 			);
     END COMPONENT;
 	 
    
-   signal din_ser     	     : std_logic_vector(11 downto 0) := (others => '0');
-   signal clk_in_ser         : std_logic := '0';
+   signal din_ser     	          : std_logic_vector(11 downto 0) := (others => '0');
+   signal clk_in_ser              : std_logic := '0';
 	signal clk_in_deser       : std_logic:='0';
 	signal clk_out_ser        : std_logic:='0';
 	signal DIN_deser       	  : std_logic :='0';
 	signal ready              : std_logic:='0';
 
  	--Outputs
-   signal dout_ser           : std_logic:='0';
+   signal dout_ser                : std_logic:='0';
 	signal dout_deser         : std_logic_vector(11 downto 0):= (others => '0');
 	signal clk_out_deser      : std_logic:='0';
 	signal link_trained       : std_logic:='0';
@@ -85,7 +85,7 @@ begin
 ser_str <= dout_ser;
 ser_inst : serializer
 port map(
-        din_ser      => din_ser,
+                  din_ser      => din_ser,
 		  ready        => ready,
 		  clk_in_ser   => clk_in_ser,
 		  depth_sel    => depth_sel,
