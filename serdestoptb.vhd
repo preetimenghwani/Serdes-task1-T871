@@ -27,187 +27,153 @@
 --------------------------------------------------------------------------------
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
- 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---USE ieee.numeric_std.ALL;
- 
+
 ENTITY serdestoptb IS
 END serdestoptb;
- 
-ARCHITECTURE behavior OF serdestoptb IS 
- 
-    -- Component Declaration for the Unit Under Test (UUT)
- 
-    COMPONENT serdestop
-    port(
-         clk_in_final    : IN  std_logic;
-			clk_in_parallel : in std_logic;
-         reset_ser       : IN  std_logic;
-         reset_deser     : IN  std_logic;
-         depth_sel       : in std_logic_vector(1 downto 0):=(others=>'0');
-         data_in         : IN  std_logic_vector(11 downto 0):=(others=>'0');
-         data_out        : OUT  std_logic_vector(11 downto 0):=(others=>'0');
-         clk_out_final   : OUT  std_logic;
-         ready_final     : OUT  std_logic
-        );
-	
-	 
-    END COMPONENT;
-    
 
-   --Inputs
-   signal clk_in_final : std_logic := '0';
-	signal clk_in_parallel: std_logic:='0';
-   signal reset_ser : std_logic := '0';
-   signal reset_deser : std_logic := '0';
-   signal depth_sel : std_logic_vector(1 downto 0):=(others=>'0');
-   signal data_in : std_logic_vector(11 downto 0):=(others=>'0');
+ARCHITECTURE behavior OF serdestoptb IS
 
- 	--Outputs
-   signal data_out      : std_logic_vector(11 downto 0):=(others=>'0');
-   signal clk_out_final : std_logic;
-   signal ready_final : std_logic;
+	-- Component Declaration for the Unit Under Test (UUT)
 
-   -- Clock period definitions
-   constant clk_in_final_period : time :=10 ns;
-   --constant clk_out_period : time := 10 ns;
-	constant clk_in_parallel_period : time :=120 ns;
+	COMPONENT serdestop
+		PORT (
+			clk_in         : IN std_logic;
+			reset_ser      : IN std_logic;
+			reset_deser    : IN std_logic;
+			depth_sel      : IN std_logic_vector(2 DOWNTO 0) := (OTHERS => '0');
+			data_in        : IN std_logic_vector(11 DOWNTO 0) := (OTHERS => '0');
+			data_out       : OUT std_logic_vector(11 DOWNTO 0) := (OTHERS => '0');
+			clk_out        : OUT std_logic;
+			ready_final    : OUT std_logic;
+			ser_str        : OUT std_logic
+			);
  
-BEGIN
  
-	-- Instantiate the Unit Under Test (UUT)
-   uut: serdestop port MAP (
-          clk_in_final => clk_in_final,
-			 clk_in_parallel=> clk_in_parallel,
-          reset_ser => reset_ser,
-          reset_deser => reset_deser,
-          depth_sel => depth_sel,
-          data_in => data_in,
-          data_out => data_out,
-          clk_out_final => clk_out_final,
-          ready_final => ready_final
-        );
-
-   -- Clock process definitions
-   clk_in_final_process :process
-   begin
-		clk_in_final <= '0';
-		wait for clk_in_final_period/2;
-		clk_in_final <= '1';
-		wait for clk_in_final_period/2;
-   end process;
-	
-	clk_in_parallel_process :process
-   begin
-		clk_in_parallel <= '0';
-		wait for clk_in_parallel_period/2;
-		clk_in_parallel <= '1';
-		wait for clk_in_parallel_period/2;
-   end process;
- 
+		END COMPONENT;
  
 
-   -- Stimulus process
-   
-	
-	depth_sel<="00";
+		--Inputs
+		SIGNAL clk_in       : std_logic := '0';
+                SIGNAL reset_ser    : std_logic := '0';
+		SIGNAL reset_deser  : std_logic := '0';
+		SIGNAL depth_sel    : std_logic_vector(2 DOWNTO 0) := (OTHERS => '0');
+		SIGNAL data_in      : std_logic_vector(11 DOWNTO 0) := (OTHERS => '0');
 
-  -- Stimulus process
-   stim_proc: process
-   begin	
-		
-   reset_deser <= '1';
-	reset_ser <= '1';
-	
-	wait for 35ns;
-	reset_ser <= '0';
-	wait for 20ns;
-	reset_deser <= '0';
-	wait until ready_final = '1';
-  -- wait for 120ns;
-	
- -- DIN1<="111000100000";
-  -- wait for 80ns;
-	--DIN1<="010100100000";
-  -- wait for 80ns;
-	--DIN1<="101011000000";
-  -- wait for 80ns;
-	--DIN1<="001111110000";
- --  wait for 80ns;
-	--DIN1<="001111101111";
-   --wait for 80ns;
-	--DIN1<="001111111111";
-   --wait for 80ns;
-	data_in<="111100000000";
-   wait for clk_in_parallel_period ;
-	data_in<="111111010111";
-   wait for clk_in_parallel_period ;
-	data_in<="111111110100";
-   wait for clk_in_parallel_period ;
-	data_in<="111111110010";
-   wait for clk_in_parallel_period ;
-	data_in<="111111100010";
-   wait for clk_in_parallel_period ;
-	data_in<="111111010010";
-   wait for clk_in_parallel_period ;
-	data_in<="111110101100";
-   wait for clk_in_parallel_period ;
-	data_in<="111111110000";
-   wait for clk_in_parallel_period ;
-	data_in<="111111101111";
-   wait for clk_in_parallel_period ;
-	data_in<="001111111111";
-   wait for clk_in_parallel_period ;
-	data_in<="001100000000";
-   wait for clk_in_parallel_period ;
-	data_in<="001101010111";
-   wait for clk_in_parallel_period ;
-	data_in<="001101110100";
-   wait for clk_in_parallel_period ;
-	data_in<="001100100000";
-   wait for clk_in_parallel_period ;
-	data_in<="000011100010";
-   wait for clk_in_parallel_period ;
-	data_in<="000001010010";
-   wait for clk_in_parallel_period ;
-	data_in<="000010101100";
-   wait for clk_in_parallel_period ;
-   data_in<="000011110000";
-   wait for clk_in_parallel_period ;
-	data_in<="000011101111";
-   wait for 1clk_in_parallel_period ;
-	data_in<="000011111111";
-   wait for clk_in_parallel_period ;
-	data_in<="000000000000";
-   wait for clk_in_parallel_period ;
-	data_in<="000001010111";
-   wait for clk_in_parallel_period ;
-	data_in<="000001110100";
-   wait for clk_in_parallel_period ;
-	data_in<="000000110010";
-   wait for clk_in_parallel_period ;
-	data_in<="000011100010";
-   wait for clk_in_parallel_period ;
-	data_in<="000001010010";
-   wait for clk_in_parallel_period ;
-	data_in<="000010101100";
-   wait for clk_in_parallel_period ;
-	data_in<="000011110000";
-   wait for clk_in_parallel_period ;
-	data_in<="000011101111";
-   wait for clk_in_parallel_period ;
-	data_in<="000011111111";
-   wait for clk_in_parallel_period ;
-	data_in<="000000000000";
-   wait for clk_in_parallel_period ;
-	data_in<="000001010111";
-   wait for clk_in_parallel_period ;
-	data_in<="000001110100";
-   wait for clk_in_parallel_period ;
-	data_in<="000000110010";
-   wait for clk_in_parallel_period ;
-     wait;
-	end process;
+		--Outputs
+		SIGNAL data_out     : std_logic_vector(11 DOWNTO 0) := (OTHERS => '0');
+		SIGNAL clk_out      : std_logic;
+		SIGNAL ready_final  : std_logic;
+		SIGNAL ser_str      : std_logic;
+
+		CONSTANT clk_in_period : TIME := 3.333 ns;
+
+	BEGIN
+		-- Instantiate the Unit Under Test (UUT)
+		uut : serdestop
+		PORT MAP(
+			clk_in        => clk_in, 
+			reset_ser     => reset_ser, 
+			reset_deser   => reset_deser, 
+			depth_sel     => depth_sel, 
+			data_in       => data_in, 
+			data_out      => data_out, 
+			clk_out       => clk_out, 
+			ready_final   => ready_final, 
+			ser_str       => ser_str
+		);
+
+		-- Clock process definitions
+		clk_in_serial_process : PROCESS
+		BEGIN
+			clk_in <= '1';
+			WAIT FOR clk_in_period/2;
+			clk_in <= '0';
+			WAIT FOR clk_in_period/2;
+		END PROCESS;
+ 
+		depth_sel <= "000";
+
+		-- Stimulus process
+		stim_proc : PROCESS
+		BEGIN
+			reset_deser <= '1';
+			reset_ser <= '1';
+ 
+			WAIT FOR 35ns;
+			reset_ser <= '0';
+			WAIT FOR 20ns;
+			reset_deser <= '0';
+			WAIT UNTIL ready_final = '1';
+ 
+			data_in <= "001100000000";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "101011010100";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "111111110100";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "100111110010";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "100011100010";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "011111010010";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "111110101100";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "111111110000";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "111111101111";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "001111111111";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "001100000000";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "001101010111";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "001101110100";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "001100100000";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000011100010";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000001010010";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000010101100";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000011110000";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000011101111";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000011111111";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000000000000";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000001010111";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000001110100";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000000110010";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000011100010";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000001010010";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000010101100";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000011110000";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000011101111";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000011111111";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000000000000";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000001010111";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000001110100";
+			WAIT UNTIL rising_edge(clk_out);
+			data_in <= "000000110010";
+			WAIT UNTIL rising_edge(clk_out);
+			WAIT;
+		END PROCESS;
 
 END;
