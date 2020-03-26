@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    17:43:52 03/19/2020 
+-- Create Date:    20:01:27 03/26/2020 
 -- Design Name: 
--- Module Name:    deser - Behavioral 
+-- Module Name:    deserializer - Behavioral 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -28,8 +28,11 @@ ENTITY deserializer IS
 		reset_deser        : IN std_logic := '0';
 		din_deser          : IN std_logic := '0';
 		depth_sel          : IN std_logic_vector(2 DOWNTO 0) := (OTHERS => '0');
-		clk_out_deser      : OUT std_logic := '0';
+		clk_out_deser      : out std_logic := '0';
 		link_trained       : OUT std_logic := '0';
+		debug1             : out std_logic_vector(11 downto 0);
+		debug2             : out std_logic_vector(3 downto 0);
+		debug3             : out std_logic_vector(11 downto 0);
 		dout_deser         : OUT std_logic_vector(11 DOWNTO 0) := (OTHERS => '0')
 		);
 	END deserializer;
@@ -45,6 +48,7 @@ ENTITY deserializer IS
 		SIGNAL clk_out_sig     : std_logic := '0';
 		CONSTANT test_pattern  : std_logic_vector (11 DOWNTO 0) := "101110101111";
 		SIGNAL bit_depth       : INTEGER;
+		signal clk_out_sig_del : std_logic;
 
 	BEGIN
 		link_trained <= linked;
@@ -63,7 +67,7 @@ ENTITY deserializer IS
 						IF linked = '1' THEN
 							counter <= counter + 1;
 						ELSE
-							IF counter_bit = "01" AND counter = "0000" THEN
+							IF counter_bit = "01" AND counter = "0011" THEN
 								IF Dout2(11 - bit_depth DOWNTO 0) = test_pattern(11 - bit_depth DOWNTO 0) THEN
 									linked <= '1';
  
@@ -73,7 +77,7 @@ ENTITY deserializer IS
 								END IF;
 								counter <= counter + '1';
  
-							ELSIF counter_bit = "11" AND counter = "0001" THEN
+							ELSIF counter_bit = "11" AND counter = "0011" THEN
 								counter <= counter + 2; 
  
 							ELSE
@@ -95,8 +99,22 @@ ENTITY deserializer IS
 		END PROCESS;
  
 		bit_depth <= to_integer(unsigned(depth_sel)); 
-
- 
+		--debug<= dout2;
+      
+		
+--   dout <=  (din_deser & dout(10 downto 0))  when (sel="0000") else
+--            (dout(11) & din_deser & dout(9 downto 0)) when (sel="0001") else
+--            (dout(11 downto 10) & din_deser & dout(8 downto 0)) when (sel="0010") else
+--            (dout(11 downto 9) & din_deser & dout(7 downto 0)) when (sel="0011") else
+--            (dout(11 downto 8) & din_deser & dout(6 downto 0)) when (sel="0100") else
+--            (dout(11 downto 7) & din_deser & dout(5 downto 0)) when (sel="0101") else
+--            (dout(11 downto 6) & din_deser & dout(4 downto 0)) when (sel="0110") else
+--            (dout(11 downto 5) & din_deser & dout(3 downto 0)) when (sel="0111") else
+--            (dout(11 downto 4) & din_deser & dout(2 downto 0)) when (sel="1000") else
+--            (dout(11 downto 3) & din_deser & dout(1 downto 0)) when (sel="1001") else
+--            (dout(11 downto 2) & din_deser & dout(0)) when (sel="1010") else
+--            (dout(11 downto 1) & din_deser) when (sel="1011") else (others => '0');
+                
 		sel <= counter;
 		PROCESS (clk_in_deser)
 			BEGIN
@@ -132,16 +150,48 @@ ENTITY deserializer IS
 					END IF;
 				END IF;
 			END PROCESS;
+			
+			--clk_out_deser<=clk_out_sig_del;
+			
 
- 
- 
- 
-			clk_out_deser <= NOT counter(2);
-			clk_out_sig <= NOT counter(2);
+         --clk_out_sig_del <= (not (not( not (not clk_out_sig))));
+	
+			process (clk_in_deser)
+         begin
+         if rising_edge(clk_in_deser)	then
+			    if (reset_deser = '1') then
+				     clk_out_sig <= '0';
+				 
+				 else
+				     if (counter = "1011" - depth_sel ) then
+		               clk_out_sig <= '1';
+					  	
+					  elsif (counter = "0101" - depth_sel(2 downto 1)) then
+		               clk_out_sig <= '0';
+					  
+					  end if;
+				 end if;
+			end if;
+		end process;
+		
+		 clk_out_deser <= clk_out_sig_del;
+	      process(clk_in_deser)
+			begin
+			if rising_edge(clk_in_deser) then
+				if clk_out_sig = '1' then
+				clk_out_sig_del <= '1';
+				elsif clk_out_sig = '0' then 
+				clk_out_sig_del <= '0';
+				end if;
+			end if;
+			end process;
 
-			p_clk_out : PROCESS (clk_out_sig)
+
+		
+        
+			p_clk_out : PROCESS (clk_out_sig_del)
 			BEGIN
-				IF (rising_edge(clk_out_sig)) THEN
+				IF (rising_edge(clk_out_sig_del)) THEN
 					IF (reset_deser = '1') THEN
 						dout2 <= (OTHERS => '0');
 					ELSE
@@ -149,6 +199,10 @@ ENTITY deserializer IS
 					END IF;
 				END IF;
 			END PROCESS;
+			debug1<=dout2;
+			debug2<=counter;
+			debug3<=dout;
+
  
 			finalout : PROCESS (dout2, linked)
 			BEGIN
@@ -158,5 +212,4 @@ ENTITY deserializer IS
 					dout_deser <= dout2;
 				END IF;
 			END PROCESS;
- 
 END Behavioral;
