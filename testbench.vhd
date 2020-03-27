@@ -83,6 +83,7 @@ port map(
       );
    
   begin
+      
 -----------------------------------------------------------------------
     -- clock process definitions
     --clk_in_ser_90 : 90 degree shifted clock for implementing ddr 
@@ -98,7 +99,6 @@ port map(
       wait for clk_in_ser_period/2;
     end process;
 
-    
     depth_sel <= "000";
 
     -- stimulus process
@@ -107,12 +107,11 @@ port map(
     begin
       reset_deser <= '1';
       reset_ser <= '1';
- 
       wait for 35ns;
       reset_ser <= '0';
       wait for 20ns;
       reset_deser <= '0';
-      
+
       wait until ready = '1';
       wait until rising_edge(clk_out_ser); 
       din_ser <= "001100000000";
@@ -186,11 +185,9 @@ port map(
       wait;
     end process;
 
-
 ----------------------------------------------------------------------
 --serializer for testing deserializer
-----------------------------------------------------------------------  
-    
+----------------------------------------------------------------------     
       
     process (clk_in_ser)
       begin
@@ -243,6 +240,7 @@ port map(
         end if;
       end if;
     end process;
+          
 ---------------------------------------------------------------------------    
 --process for samling output of serializer using a dmux
 ---------------------------------------------------------------------------
