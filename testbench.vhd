@@ -85,8 +85,8 @@ begin
 		--clk_in_ser_90 : 90 degree shifted clock for implementing ddr 
 ----------------------------------------------------------------------		
 		
- 	clk_in_serial_process : process
-	begin
+ clk_in_serial_process : process
+ 	begin
 	   clk_in_ser_90 <= '0';
 	   clk_in_ser <= '1';
 	   wait for clk_in_ser_period/2;
