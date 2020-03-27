@@ -17,199 +17,184 @@
 -- additional comments: 
 --
 ----------------------------------------------------------------------------------
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
-USE ieee.numeric_std.ALL;
+ibrary ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
 
-ENTITY deserializer IS
-PORT (
-	clk_in_deser  : IN std_logic := '0';
-	reset_deser   : IN std_logic := '0';
-	din_deser     : IN std_logic := '0';
-	depth_sel     : IN std_logic_vector(2 DOWNTO 0) := (OTHERS => '0');
-	clk_out_deser : OUT std_logic := '0';
-	link_trained  : OUT std_logic := '0';                                  --assigned '1' when bit slip is adjusted
-	dout_deser    : OUT std_logic_vector(11 DOWNTO 0) := (OTHERS => '0');
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
+
+entity deserializer is
+port (
+	clk_in_deser  : in std_logic := '0';
+	reset_deser   : in std_logic := '0';
+	din_deser     : in std_logic := '0';
+	depth_sel     : in std_logic_vector(2 downto 0) := (others => '0');
+	clk_out_deser : out std_logic := '0';
+	link_trained  : out std_logic := '0';                                  --assigned '1' when bit slip is adjusted
+	dout_deser    : out std_logic_vector(11 downto 0) := (others => '0');
 	);
-END deserializer;
+end deserializer;
 
-ARCHITECTURE behavioral OF deserializer IS
+architecture behavioral of deserializer is
 
-	SIGNAL dout              : std_logic_vector(11 DOWNTO 0) := (OTHERS => '0');
-	SIGNAL dout2             : std_logic_vector(11 DOWNTO 0) := (OTHERS => '0');
-	SIGNAL counter           : std_logic_vector(2 DOWNTO 0) := (OTHERS => '0');
-	SIGNAL sel               : std_logic_vector(2 DOWNTO 0) := (OTHERS => '0');
-	SIGNAL counter_bit       : std_logic_vector(1 DOWNTO 0) := (OTHERS => '0');
-	SIGNAL linked            : std_logic := '0';
-	SIGNAL clk_out_sig       : std_logic := '0';
-	SIGNAL bit_depth         : INTEGER;
-	SIGNAL clk_out_sig_del   : std_logic;
-	SIGNAL ddr               : std_logic_vector(1 DOWNTO 0);        
-	SIGNAL ddr0              : std_logic;
-	SIGNAL din               : std_logic_vector(1 DOWNTO 0);
-	CONSTANT test_pattern    : std_logic_vector (11 DOWNTO 0) := "101110101111";
+	signal dout              : std_logic_vector(11 downto 0) := (others => '0');
+	signal dout2             : std_logic_vector(11 downto 0) := (others => '0');
+	signal counter           : std_logic_vector(2 downto 0) := (others => '0');
+	signal sel               : std_logic_vector(2 downto 0) := (others => '0');
+	signal counter_bit       : std_logic_vector(1 downto 0) := (others => '0');
+	signal linked            : std_logic := '0';
+	signal clk_out_sig       : std_logic := '0';
+	signal bit_depth         : integer;
+	signal clk_out_sig_del   : std_logic;
+	signal ddr               : std_logic_vector(1 downto 0);        
+	signal ddr0              : std_logic;
+	signal din               : std_logic_vector(1 downto 0);
+	constant test_pattern    : std_logic_vector (11 downto 0) := "101110101111";
 
-BEGIN
+begin
 	link_trained <= linked;
+	
 ------------------------------------------------------------------------		
--- DDR implementation using flip flops and latches with reset		
+-- ddr implementation using flip flops and latches with reset		
 --------------------------------------------------------------------------
 
-	ddr0 <= din_deser WHEN clk_in_deser = '0';
-	ddr(1) <= din_deser WHEN falling_edge(clk_in_deser);
-	ddr(0) <= ddr0 WHEN falling_edge(clk_in_deser);
+	ddr0 <= din_deser when clk_in_deser = '0';
+	ddr(1) <= din_deser when falling_edge(clk_in_deser);
+	ddr(0) <= ddr0 when falling_edge(clk_in_deser);
 	din <= ddr(0) & ddr(1);
 	
 --------------------------------------------------------------------------
---	bitslip_proc: Adjusts the bitslip for link training 
+--	bitslip_proc: adjusts the bitslip for link training 
 ---------------------------------------------------------------------------	
-	bitslip_proc : PROCESS (clk_in_deser)
-	BEGIN
-		IF rising_edge(clk_in_deser) THEN
+	bitslip_proc : process (clk_in_deser)
+	begin
+		if rising_edge(clk_in_deser) then
 
-			IF reset_deser = '1' THEN
+			if reset_deser = '1' then
 				counter <= "000";
 				linked <= '0';
-			ELSE
-				IF counter = 5 - bit_depth/2 THEN
+			else
+				if counter = 5 - bit_depth/2 then
 					counter <= "000";
-				ELSE
-					IF linked = '1' THEN
+				else
+					if linked = '1' then
 						counter <= counter + 1;
-					ELSE
-						IF counter_bit = "01" AND counter = "011" THEN
-							IF dout2(11 - bit_depth DOWNTO 0) = test_pattern(11 - bit_depth DOWNTO 0) THEN
+					else
+						if counter_bit = "01" and counter = "011" then
+							if dout2(11 - bit_depth downto 0) = test_pattern(11 - bit_depth downto 0) then
 								linked <= '1';
 
-							ELSE
+							else
 								linked <= linked;
 
-							END IF;
+							end if;
 							counter <= counter + '1';
 
-						ELSIF counter_bit = "11" AND counter = "011" THEN
+						elsif counter_bit = "11" and counter = "011" then
 							counter <= counter + 2;
 
-						ELSE
+						else
 							counter <= counter + '1';
-						END IF;
-					END IF;
-				END IF;
-			END IF;
-		END IF;
-	END PROCESS;
+						end if;
+					end if;
+				end if;
+			end if;
+		end if;
+	end process;
 	
 ----------------------------------------------------------------------------------------------------------		
 --newcounter_proc: for making a new counter which is used for checking whether link is trained or not
 ----------------------------------------------------------------------------------------------------------
 
-	newcounter_proc : PROCESS (counter, clk_in_deser)
-	BEGIN
-		IF rising_edge(clk_in_deser) THEN
-			IF (counter = 5 - bit_depth/2) THEN
+	newcounter_proc : process (counter, clk_in_deser)
+	begin
+		if rising_edge(clk_in_deser) then
+			if (counter = 5 - bit_depth/2) then
 				counter_bit <= counter_bit + 1;
-			END IF;
-		END IF;
-	END PROCESS;
+			end if;
+		end if;
+	end process;
 
 	bit_depth <= to_integer(unsigned(depth_sel));
 
 
 	sel <= counter;
 	
-	PROCESS (clk_in_deser)
-		BEGIN
-			IF (rising_edge(clk_in_deser)) THEN
-				IF (reset_deser = '1') THEN
+	process (clk_in_deser)
+		begin
+			if (rising_edge(clk_in_deser)) then
+				if (reset_deser = '1') then
 					dout <= "000000000000";
-				ELSE
-					IF (sel = "000") THEN
-						dout(11 DOWNTO 10) <= din;
-					ELSIF (sel = "001") THEN
-						dout(9 DOWNTO 8) <= (din);
-					ELSIF (sel = "010") THEN
-						dout(7 DOWNTO 6) <= (din);
-					ELSIF (sel = "011") THEN
-						dout(5 DOWNTO 4) <= din;
-					ELSIF (sel = "100") THEN
-						dout(3 DOWNTO 2) <= din;
-					ELSIF (sel = "101") THEN
-						dout(1 DOWNTO 0) <= din;
-					END IF;
-				END IF;
-			END IF;
-		END PROCESS;
+				else
+					if (sel = "000") then
+						dout(11 downto 10) <= din;
+					elsif (sel = "001") then
+						dout(9 downto 8) <= (din);
+					elsif (sel = "010") then
+						dout(7 downto 6) <= (din);
+					elsif (sel = "011") then
+						dout(5 downto 4) <= din;
+					elsif (sel = "100") then
+						dout(3 downto 2) <= din;
+					elsif (sel = "101") then
+						dout(1 downto 0) <= din;
+					end if;
+				end if;
+			end if;
+		end process;
 
 		clk_out_deser <= clk_out_sig_del;
 ---------------------------------------------------------------------------			
 -- process for making a delayed clock signal for output data sampling
 ----------------------------------------------------------------------------
-	PROCESS (clk_in_deser)
-		BEGIN
-			IF rising_edge(clk_in_deser) THEN
-				IF clk_out_sig = '1' THEN
+	process (clk_in_deser)
+		begin
+			if rising_edge(clk_in_deser) then
+				if clk_out_sig = '1' then
 					clk_out_sig_del <= '1';
-				ELSIF clk_out_sig = '0' THEN
+				elsif clk_out_sig = '0' then
 					clk_out_sig_del <= '0';
-				END IF;
-			END IF;
-		END PROCESS;
+				end if;
+			end if;
+		end process;
 
---
-	PROCESS (clk_in_deser)
-		BEGIN
-			IF rising_edge(clk_in_deser) THEN
-				IF (reset_deser = '1') THEN
+
+	process (clk_in_deser)
+		begin
+			if rising_edge(clk_in_deser) then
+				if (reset_deser = '1') then
 					clk_out_sig <= '0';
 
-				ELSE
-					IF (counter = "101" - depth_sel(2 DOWNTO 1)) THEN
+				else
+					if (counter = "101" - depth_sel(2 downto 1)) then
 						clk_out_sig <= '1';
 
-					ELSIF (counter = "011" - depth_sel(2)) THEN
+					elsif (counter = "011" - depth_sel(2)) then
 						clk_out_sig <= '0';
 
-					END IF;
-				END IF;
-			END IF;
-		END PROCESS;
+					end if;
+				end if;
+			end if;
+		end process;
 ----------------------------------------------------------------------------					
 -- sampling of output data
 ----------------------------------------------------------------------------
 
-	p_clk_out : PROCESS (clk_out_sig_del)
-		BEGIN
-			IF (rising_edge(clk_out_sig_del)) THEN
-				IF (reset_deser = '1') THEN
-					dout2 <= (OTHERS => '0');
-				ELSE
-					dout2(11 - bit_depth DOWNTO 0) <= dout(11 DOWNTO bit_depth);
-				END IF;
-			END IF;
-		END PROCESS;
+	p_clk_out : process (clk_out_sig_del)
+		begin
+			if (rising_edge(clk_out_sig_del)) then
+				if (reset_deser = '1') then
+					dout2 <= (others => '0');
+				else
+					dout2(11 - bit_depth downto 0) <= dout(11 downto bit_depth);
+				end if;
+			end if;
+		end process;	
+		
+	dout_deser <= dout2;
 				
-	finalout : PROCESS (dout2, linked)
-		BEGIN
-			IF (linked = '0') THEN
-				dout_deser <= (OTHERS => '0');
-			ELSE
-				dout_deser <= dout2;
-			END IF;
-		END PROCESS;
-				
-END behavioral;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+end behavioral;
