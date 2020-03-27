@@ -1,45 +1,8 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date:    20:01:27 03/26/2020 
--- Design Name: 
--- Module Name:    deserializer - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
 -- company: 
 -- engineer: 
 -- 
 -- create date:    20:01:27 03/26/2020 
--- design name: 
--- module name:    deserializer - behavioral 
--- project name: 
--- target devices: 
--- tool versions: 
--- description: 
---
--- dependencies: 
---
--- revision: 
--- revision 0.01 - file created
--- additional comments: 
---
-----------------------------------------------------------------------------------
--- company: 
--- engineer: 
--- 
--- create date:    17:43:52 03/19/2020 
 -- design name: 
 -- module name:    deserializer - behavioral 
 -- project name: 
@@ -182,58 +145,58 @@ BEGIN
 ---------------------------------------------------------------------------			
 -- process for making a delayed clock signal for output data sampling
 ----------------------------------------------------------------------------
-		PROCESS (clk_in_deser)
-			BEGIN
-				IF rising_edge(clk_in_deser) THEN
-					IF clk_out_sig = '1' THEN
-						clk_out_sig_del <= '1';
-					ELSIF clk_out_sig = '0' THEN
-						clk_out_sig_del <= '0';
-					END IF;
+	PROCESS (clk_in_deser)
+		BEGIN
+			IF rising_edge(clk_in_deser) THEN
+				IF clk_out_sig = '1' THEN
+					clk_out_sig_del <= '1';
+				ELSIF clk_out_sig = '0' THEN
+					clk_out_sig_del <= '0';
 				END IF;
-			END PROCESS;
+			END IF;
+		END PROCESS;
 
 --
-			PROCESS (clk_in_deser)
-			BEGIN
-					IF rising_edge(clk_in_deser) THEN
-						IF (reset_deser = '1') THEN
-							clk_out_sig <= '0';
+	PROCESS (clk_in_deser)
+		BEGIN
+			IF rising_edge(clk_in_deser) THEN
+				IF (reset_deser = '1') THEN
+					clk_out_sig <= '0';
 
-						ELSE
-							IF (counter = "101" - depth_sel(2 DOWNTO 1)) THEN
-								clk_out_sig <= '1';
+				ELSE
+					IF (counter = "101" - depth_sel(2 DOWNTO 1)) THEN
+						clk_out_sig <= '1';
 
-							ELSIF (counter = "011" - depth_sel(2)) THEN
-								clk_out_sig <= '0';
+					ELSIF (counter = "011" - depth_sel(2)) THEN
+						clk_out_sig <= '0';
 
-							END IF;
-						END IF;
 					END IF;
-				END PROCESS;
+				END IF;
+			END IF;
+		END PROCESS;
 ----------------------------------------------------------------------------					
 -- sampling of output data
 ----------------------------------------------------------------------------
 
-				p_clk_out : PROCESS (clk_out_sig_del)
-				BEGIN
-					IF (rising_edge(clk_out_sig_del)) THEN
-						IF (reset_deser = '1') THEN
-							dout2 <= (OTHERS => '0');
-						ELSE
-							dout2(11 - bit_depth DOWNTO 0) <= dout(11 DOWNTO bit_depth);
-						END IF;
-					END IF;
-				END PROCESS;
+	p_clk_out : PROCESS (clk_out_sig_del)
+		BEGIN
+			IF (rising_edge(clk_out_sig_del)) THEN
+				IF (reset_deser = '1') THEN
+					dout2 <= (OTHERS => '0');
+				ELSE
+					dout2(11 - bit_depth DOWNTO 0) <= dout(11 DOWNTO bit_depth);
+				END IF;
+			END IF;
+		END PROCESS;
 				
-				finalout : PROCESS (dout2, linked)
-				BEGIN
-					IF (linked = '0') THEN
-						dout_deser <= (OTHERS => '0');
-					ELSE
-						dout_deser <= dout2;
-					END IF;
-				END PROCESS;
+	finalout : PROCESS (dout2, linked)
+		BEGIN
+			IF (linked = '0') THEN
+				dout_deser <= (OTHERS => '0');
+			ELSE
+				dout_deser <= dout2;
+			END IF;
+		END PROCESS;
 				
 END behavioral;
 
