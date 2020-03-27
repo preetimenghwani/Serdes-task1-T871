@@ -22,11 +22,6 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
-use ieee.numeric_std.all;
-
 entity deserializer is
 port (
   clk_in_deser  : in std_logic := '0';
@@ -145,9 +140,11 @@ begin
     end process;
 
     clk_out_deser <= clk_out_sig_del;
+          
 ---------------------------------------------------------------------------      
 -- process for making a delayed clock signal for output data sampling
 ----------------------------------------------------------------------------
+          
   process (clk_in_deser)
     begin
       if rising_edge(clk_in_deser) then
@@ -158,7 +155,6 @@ begin
         end if;
       end if;
     end process;
-
 
   process (clk_in_deser)
     begin
@@ -175,6 +171,7 @@ begin
         end if;
       end if;
     end process;
+        
 ----------------------------------------------------------------------------          
 -- sampling of output data
 ----------------------------------------------------------------------------
