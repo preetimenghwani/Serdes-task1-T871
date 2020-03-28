@@ -35,11 +35,9 @@ end serdestoptb;
 
 architecture behavior of serdestoptb is
     
-     signal depth_sel            : std_logic_vector(2 downto 0) := (others => '0');
+     constant clk_in_ser_period : time := 3.3333 ns;
 
-    
-     constant clk_in_ser_period  : time := 3.3333 ns;
-    
+     signal depth_sel           : std_logic_vector(2 downto 0) := (others => '0');
      signal clk_in_ser          : std_logic := '0';
      signal clk_in_ser_90       : std_logic := '0';
      signal reset_ser           : std_logic := '0';
