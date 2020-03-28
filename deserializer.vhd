@@ -205,17 +205,3 @@ begin
   dout_deser <= dout2;
         
 end behavioral;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
