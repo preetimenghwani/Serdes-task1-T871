@@ -35,10 +35,10 @@ end serdestoptb;
 
 architecture behavior of serdestoptb is
     
-    signal depth_sel           : std_logic_vector(2 downto 0) := (others => '0');
+    signal depth_sel            : std_logic_vector(2 downto 0) := (others => '0');
 
     
-    constant clk_in_ser_period : time := 3.3333 ns;
+    constant clk_in_ser_period  : time := 3.3333 ns;
     
      signal clk_in_ser          : std_logic := '0';
      signal clk_in_ser_90       : std_logic := '0';
@@ -50,23 +50,23 @@ architecture behavior of serdestoptb is
      signal din_deser           : std_logic :='0';
      signal ready               : std_logic:='0';
   
-    constant test_pattern      : std_logic_vector (11 downto 0) := "101110101111";
-    signal sel                 : std_logic_vector(3 downto 0) := (others => '0');
-    signal counter             : std_logic_vector(2 downto 0) := (others => '0');
-    signal din                 : std_logic_vector(11 downto 0) :=(others => '0');
-    signal bit_depth           : integer;
-    signal clk_out_deser       : std_logic:='0';
+    constant test_pattern       : std_logic_vector (11 downto 0) := "101110101111";
+    signal sel                  : std_logic_vector(3 downto 0) := (others => '0');
+    signal counter              : std_logic_vector(2 downto 0) := (others => '0');
+    signal din                  : std_logic_vector(11 downto 0) :=(others => '0');
+    signal bit_depth            : integer;
+    signal clk_out_deser        : std_logic:='0';
 
    component deserializer 
     port(
-         clk_in_deser        : in  std_logic:='0';
-         reset_deser         : in  std_logic:='0';
-         din_deser           : in  std_logic:='0';
-         depth_sel           : in  std_logic_vector(2 downto 0):=(others=>'0');
-         clk_out_deser       : out std_logic:='0';
-         link_trained        : out std_logic:='0';
-         dout_deser          : out std_logic_vector(11 downto 0):=(others=>'0')
-      );
+         clk_in_deser           : in  std_logic:='0';
+         reset_deser            : in  std_logic:='0';
+         din_deser              : in  std_logic:='0';
+         depth_sel              : in  std_logic_vector(2 downto 0):=(others=>'0');
+         clk_out_deser          : out std_logic:='0';
+         link_trained           : out std_logic:='0';
+         dout_deser             : out std_logic_vector(11 downto 0):=(others=>'0')
+       );
     end component;
    
 --instantiate the unit under test(uut) : deserializer
@@ -105,6 +105,7 @@ port map(
     
     stim_proc : process
     begin
+        
       reset_deser <= '1';
       reset_ser <= '1';
       wait for 35ns;
@@ -193,12 +194,15 @@ port map(
       begin
          if rising_edge(clk_in_ser)  then
           if (reset_ser = '1') then
-             clk_out_ser <= '0';       
+             clk_out_ser <= '0'; 
+             
          else
              if (counter = "101" - depth_sel(2 downto 1) ) then
-                   clk_out_ser <= '1';           
+                   clk_out_ser <= '1';    
+             
             elsif (counter = "011" - depth_sel(2 downto 1)) then
-                   clk_out_ser <= '0';            
+                   clk_out_ser <= '0';    
+             
             end if;
          end if;
       end if;
@@ -209,15 +213,18 @@ port map(
       if (rising_edge(clk_in_ser)) then
         if (reset_ser = '1') then
           counter    <=  (others => '0');
+          
         else
           if (counter = 5 - bit_depth/2) then
             counter <=  (others => '0');
+            
           else
             counter <=  counter + 1;
+            
           end if;
         end if;
       end if;
-      end process;
+    end process;
  
     bit_depth <=  to_integer(unsigned(depth_sel));
     sel   <=  counter & (not clk_in_ser);
@@ -231,11 +238,14 @@ port map(
       if (rising_edge(clk_out_ser)) then
         if (reset_ser = '1') then
           din <= "000000000000"; 
+          
         else
           if (ready = '1') then
                 din(11 downto bit_depth) <= din_ser(11 - bit_depth downto 0);
+            
           else
                 din(11 downto bit_depth) <= test_pattern(11 - bit_depth downto 0);
+            
           end if;
         end if;
       end if;
@@ -262,6 +272,7 @@ port map(
             when"1011" => din_deser <= din(0);
             when others => 
               din_deser <= '0';
+                
           end case;
     end process;
 end;
