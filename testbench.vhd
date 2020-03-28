@@ -35,10 +35,10 @@ end serdestoptb;
 
 architecture behavior of serdestoptb is
     
-    signal depth_sel            : std_logic_vector(2 downto 0) := (others => '0');
+     signal depth_sel            : std_logic_vector(2 downto 0) := (others => '0');
 
     
-    constant clk_in_ser_period  : time := 3.3333 ns;
+     constant clk_in_ser_period  : time := 3.3333 ns;
     
      signal clk_in_ser          : std_logic := '0';
      signal clk_in_ser_90       : std_logic := '0';
@@ -50,12 +50,12 @@ architecture behavior of serdestoptb is
      signal din_deser           : std_logic :='0';
      signal ready               : std_logic:='0';
   
-    constant test_pattern       : std_logic_vector (11 downto 0) := "101110101111";
-    signal sel                  : std_logic_vector(3 downto 0) := (others => '0');
-    signal counter              : std_logic_vector(2 downto 0) := (others => '0');
-    signal din                  : std_logic_vector(11 downto 0) :=(others => '0');
-    signal bit_depth            : integer;
-    signal clk_out_deser        : std_logic:='0';
+     constant test_pattern      : std_logic_vector (11 downto 0) := "101110101111";
+     signal sel                 : std_logic_vector(3 downto 0) := (others => '0');
+     signal counter             : std_logic_vector(2 downto 0) := (others => '0');
+     signal din                 : std_logic_vector(11 downto 0) :=(others => '0');
+     signal bit_depth           : integer;
+     signal clk_out_deser       : std_logic:='0';
 
    component deserializer 
     port(
@@ -71,16 +71,16 @@ architecture behavior of serdestoptb is
    
 --instantiate the unit under test(uut) : deserializer
 
-deser_inst: deserializer
-port map(
-      clk_in_deser  => clk_in_ser_90,
-      reset_deser   => reset_deser,
-      din_deser     => din_deser,
-      depth_sel     => depth_sel,
-      clk_out_deser => clk_out_deser,
-      link_trained  => ready,
-      dout_deser    => dout_deser
-      );
+   deser_inst: deserializer
+    port map(
+          clk_in_deser  => clk_in_ser_90,
+          reset_deser   => reset_deser,
+          din_deser     => din_deser,
+          depth_sel     => depth_sel,
+          clk_out_deser => clk_out_deser,
+          link_trained  => ready,
+          dout_deser    => dout_deser
+          );
    
   begin
       
