@@ -98,8 +98,8 @@ begin
 
             else
               counter <= counter + '1';
-            end if;
-              
+                 
+            end if;    
           end if;            
         end if;        
       end if;      
@@ -142,6 +142,7 @@ begin
             dout(3 downto 2) <= din;
           elsif (sel = "101") then
             dout(1 downto 0) <= din;
+             
           end if;           
         end if;       
       end if;         
