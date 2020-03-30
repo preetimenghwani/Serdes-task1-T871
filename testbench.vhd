@@ -189,88 +189,88 @@ architecture behavior of serdestoptb is
 ----------------------------------------------------------------------     
       
     process (clk_in_ser)
-      begin
-         if rising_edge(clk_in_ser)  then
-          if (reset_ser = '1') then
-             clk_out_ser <= '0'; 
-             
-         else
-             if (counter = "101" - depth_sel(2 downto 1) ) then
-                   clk_out_ser <= '1';    
-             
-            elsif (counter = "011" - depth_sel(2 downto 1)) then
-                   clk_out_ser <= '0';    
-             
-            end if;
-         end if;
-      end if;
-    end process;
-      
-    process (clk_in_ser, reset_ser)
-    begin
-      if (rising_edge(clk_in_ser)) then
-        if (reset_ser = '1') then
-          counter    <=  (others => '0');
-          
-        else
-          if (counter = 5 - bit_depth/2) then
-            counter <=  (others => '0');
-            
-          else
-            counter <=  counter + 1;
-            
-          end if;
-        end if;
-      end if;
-    end process;
+begin
+	if rising_edge(clk_in_ser) then
+		if (reset_ser = '1') then
+			clk_out_ser <= '0';
  
-    bit_depth <=  to_integer(unsigned(depth_sel));
-    sel   <=  counter & (not clk_in_ser);
-    
+		else
+			if (counter = "101" - depth_sel(2 downto 1)) then
+				clk_out_ser <= '1'; 
+ 
+			elsif (counter = "011" - depth_sel(2 downto 1)) then
+				clk_out_ser <= '0'; 
+ 
+			end if;
+		end if;
+	end if;
+end process;
+ 
+process (clk_in_ser, reset_ser)
+begin
+	if (rising_edge(clk_in_ser)) then
+		if (reset_ser = '1') then
+			counter <= (others => '0');
+ 
+		else
+			if (counter = 5 - bit_depth/2) then
+				counter <= (others => '0');
+ 
+			else
+				counter <= counter + 1;
+ 
+			end if;
+		end if;
+	end if;
+end process;
+
+bit_depth <= to_integer(unsigned(depth_sel));
+sel <= counter & (not clk_in_ser);
+ 
 ---------------------------------------------------------------------------------------
---p_clk_out process for assigning input data as test pattern when link is not trained  
+--p_clk_out process for assigning input data as test pattern when link is not trained 
 ---------------------------------------------------------------------------------------
-  
-    p_clk_out : process (clk_out_ser)
-    begin
-      if (rising_edge(clk_out_ser)) then
-        if (reset_ser = '1') then
-          din <= "000000000000"; 
-          
-        else
-          if (ready = '1') then
-                din(11 downto bit_depth) <= din_ser(11 - bit_depth downto 0);
-            
-          else
-                din(11 downto bit_depth) <= test_pattern(11 - bit_depth downto 0);
-            
-          end if;
-        end if;
-      end if;
-    end process;
-          
----------------------------------------------------------------------------    
+ 
+p_clk_out : process (clk_out_ser)
+begin
+	if (rising_edge(clk_out_ser)) then
+		if (reset_ser = '1') then
+			din <= "000000000000";
+ 
+		else
+			if (ready = '1') then
+				din(11 downto bit_depth) <= din_ser(11 - bit_depth downto 0);
+ 
+			else
+				din(11 downto bit_depth) <= test_pattern(11 - bit_depth downto 0);
+ 
+			end if;
+		end if;
+	end if;
+end process;
+ 
+--------------------------------------------------------------------------- 
 --process for samling output of serializer using a dmux
 ---------------------------------------------------------------------------
-  
-    process (sel,din)
-      begin
-        case sel is
-            when"0000" => din_deser <= din(11);
-            when"0001" => din_deser <= din(10);
-            when"0010" => din_deser <= din(9);
-            when"0011" => din_deser <= din(8);
-            when"0100" => din_deser <= din(7);
-            when"0101" => din_deser <= din(6);
-            when"0110" => din_deser <= din(5);
-            when"0111" => din_deser <= din(4);
-            when"1000" => din_deser <= din(3);
-            when"1001" => din_deser <= din(2);
-            when"1010" => din_deser <= din(1);
-            when"1011" => din_deser <= din(0);
-            when others => 
-              din_deser <= '0';
-                
-          end case;
-    end process;
+ 
+process (sel, din)
+	begin
+		case sel is
+			when"0000" => din_deser <= din(11);
+			when"0001" => din_deser <= din(10);
+			when"0010" => din_deser <= din(9);
+			when"0011" => din_deser <= din(8);
+			when"0100" => din_deser <= din(7);
+			when"0101" => din_deser <= din(6);
+			when"0110" => din_deser <= din(5);
+			when"0111" => din_deser <= din(4);
+			when"1000" => din_deser <= din(3);
+			when"1001" => din_deser <= din(2);
+			when"1010" => din_deser <= din(1);
+			when"1011" => din_deser <= din(0);
+			when others => 
+				din_deser <= '0';
+ 
+		end case;
+	end process;
 end;
