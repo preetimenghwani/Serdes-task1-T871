@@ -115,7 +115,7 @@ begin
     word_counter_proc : process(clk_in_deser)
     begin
         if rising_edge(clk_in_deser) then
-            if (counter = 5 - bit_depth/2) then
+            if counter = 5 - bit_depth/2 then
                 counter_word <= counter_word + 1;
 
             end if;
@@ -183,7 +183,7 @@ begin
     slow_clk_gen_proc : process(clk_in_deser)
     begin
         if rising_edge(clk_in_deser) then
-            if (reset_deser = '1') then
+            if reset_deser = '1' then
                 clk_out_sig <= '0';
 
             else
@@ -204,7 +204,7 @@ begin
     data_buf_proc : process(clk_out_sig_del)
     begin
         if (rising_edge(clk_out_sig_del)) then
-            if (reset_deser = '1') then
+            if reset_deser = '1' then
                 dout_buf <= (others => '0');
 
             else
