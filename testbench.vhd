@@ -20,13 +20,13 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 
-entity serdestoptb is
-end serdestoptb;
+entity testbench is
+end testbench;
 
-architecture behavior of serdestoptb is
+architecture behavior of testbench is
 
-    constant clk_in_ser_period : time := 3.333 ns;
-    constant test_pattern : std_logic_vector (11 downto 0) := "101110101111";
+    constant clk_in_ser_period : time := 3.3333 ns;
+    constant test_pattern : std_logic_vector(11 downto 0) := "101110101111";
     -- Clocks and resets
     signal clk_in_ser    : std_logic := '0';
     signal clk_in_ser_90 : std_logic := '0';
@@ -48,7 +48,7 @@ architecture behavior of serdestoptb is
     signal counter : std_logic_vector(2 downto 0) := (others => '0');
 
     component deserializer
-        port(
+        port (
             clk_in_deser  : in  std_logic := '0';
             reset_deser   : in  std_logic := '0';
             din_deser     : in  std_logic := '0';
@@ -65,7 +65,7 @@ begin
     -- deser_int : Instantion of Serial to Parallel Converter i.e. Deserializer
     ----------------------------------------------------------------------------
     deser_inst : deserializer
-        port map(
+        port map (
             clk_in_deser  => clk_in_ser_90,
             reset_deser   => reset_deser,
             din_deser     => din_deser,
@@ -82,14 +82,14 @@ begin
     serial_clk_gen_proc : process
     begin
         clk_in_ser    <= '1';
-        wait for clk_in_ser_period*0/8;
-        clk_in_ser_90 <= '1';
-        wait for clk_in_ser_period*4/8;
+        wait for clk_in_ser_period*2/8;
+        clk_in_ser_90 <= '0';
+        wait for clk_in_ser_period*2/8;
 
         clk_in_ser    <= '0';
-        wait for clk_in_ser_period*0/8;
-        clk_in_ser_90 <= '0';
-        wait for clk_in_ser_period*4/8;
+        wait for clk_in_ser_period*2/8;
+        clk_in_ser_90 <= '1';
+        wait for clk_in_ser_period*2/8;
 
     end process;
 
@@ -186,17 +186,17 @@ begin
     ----------------------------------------------------------------------------
     -- input_clk_gen_proc : Deserialized input data receive clock generator
     ----------------------------------------------------------------------------
-    input_clk_gen_proc : process(clk_in_ser)
+    input_clk_gen_proc : process (clk_in_ser)
     begin
         if rising_edge(clk_in_ser) then
-            if (reset_ser = '1') then
+            if reset_ser = '1' then
                 clk_out_ser <= '0';
 
             else
-                if (counter = "101" - depth_sel(2 downto 1)) then
+                if counter = "101" - depth_sel(2 downto 1) then
                     clk_out_ser <= '1';
 
-                elsif (counter = "011" - depth_sel(2 downto 1)) then
+                elsif counter = "011" - depth_sel(2 downto 1) then
                     clk_out_ser <= '0';
 
                 end if;
@@ -207,14 +207,14 @@ begin
     ----------------------------------------------------------------------------
     -- counter_proc : Counter for indexing the multiplexer
     ----------------------------------------------------------------------------
-    counter_proc : process(clk_in_ser)
+    counter_proc : process (clk_in_ser)
     begin
-        if (rising_edge(clk_in_ser)) then
-            if (reset_ser = '1') then
+        if rising_edge(clk_in_ser) then
+            if reset_ser = '1' then
                 counter <= (others => '0');
 
             else
-                if (counter = 5 - bit_depth/2) then
+                if counter = 5 - bit_depth/2 then
                     counter <= (others => '0');
 
                 else
@@ -234,12 +234,12 @@ begin
     ----------------------------------------------------------------------------
     traning_data_proc : process (clk_out_ser)
     begin
-        if (rising_edge(clk_out_ser)) then
-            if (reset_ser = '1') then
+        if rising_edge(clk_out_ser) then
+            if reset_ser = '1' then
                 din <= (others => '0');
 
             else
-                if (ready = '1') then
+                if ready = '1' then
                     din(11 downto bit_depth) <= din_ser(11 - bit_depth downto 0);
 
                 else
