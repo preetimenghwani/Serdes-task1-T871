@@ -47,7 +47,6 @@ architecture behavioral of deserializer is
     signal linked          : std_logic := '0';
     signal clk_out_sig     : std_logic := '0';
     signal bit_depth       : integer;
-    signal clk_out_sig_del : std_logic;
     signal ddr             : std_logic_vector(1 downto 0);
     signal ddr0            : std_logic;
     signal din             : std_logic_vector(1 downto 0);
@@ -60,15 +59,15 @@ begin
     ----------------------------------------------------------------------------
     -- DDR implementation using flip flops and a latch    
     ----------------------------------------------------------------------------
-    ddr0   <= din_deser when clk_in_deser = '0';
-    ddr(1) <= din_deser when falling_edge(clk_in_deser);
-    ddr(0) <= ddr0      when falling_edge(clk_in_deser);
-    din    <= ddr(0) & ddr(1);
-
+    ddr0 <= din_deser when falling_edge(clk_in_deser);
+    ddr(1) <= ddr0 when rising_edge(clk_in_deser);
+    ddr(0) <= din_deser when rising_edge(clk_in_deser); 
+    din  <= ddr;
+     
     ----------------------------------------------------------------------------
     -- bitslip_proc: Adjusts the bitslip for link training 
     ---------------------------------------------------------------------------- 
-    bitslip_proc : process(clk_in_deser)
+    bitslip_proc : process (clk_in_deser)
     begin
         if rising_edge(clk_in_deser) then
             if reset_deser = '1' then
@@ -84,7 +83,7 @@ begin
                         counter <= counter + 1;
 
                     else
-                        if counter_word = "01" and counter = "011" then
+                        if counter_word = "01" and counter = "001" then
                             if dout_buf(11 - bit_depth downto 0) =
                                 test_pattern(11 - bit_depth downto 0) then
                                 linked <= '1';
@@ -93,13 +92,13 @@ begin
                                 linked <= linked;
 
                             end if;
-                            counter <= counter + '1';
+                            counter <= counter + 1;
 
-                        elsif counter_word = "11" and counter = "011" then
+                        elsif counter_word = "11" and counter = "001" then
                             counter <= counter + 2;
 
                         else
-                            counter <= counter + '1';
+                            counter <= counter + 1;
 
                         end if;
                     end if;
@@ -112,7 +111,7 @@ begin
     -- word_counter_proc: Making a word counter which is used for give gap 
     --                    between bit slip words.
     ----------------------------------------------------------------------------
-    word_counter_proc : process(clk_in_deser)
+    word_counter_proc : process (clk_in_deser)
     begin
         if rising_edge(clk_in_deser) then
             if counter = 5 - bit_depth/2 then
@@ -123,97 +122,65 @@ begin
     end process;
 
     bit_depth <= to_integer(unsigned(depth_sel));
-    sel       <= counter;
+    sel <= counter;
 
     ----------------------------------------------------------------------------
     -- deser_proc : Takes two bit DDR words and deseriazes them in bit depth 
     --              sized words
     ----------------------------------------------------------------------------
-    deser_proc : process(clk_in_deser)
+    deser_proc : process (clk_in_deser)
     begin
-        if (rising_edge(clk_in_deser)) then
-            if (reset_deser = '1') then
-                dout <= "000000000000";
+        if rising_edge(clk_in_deser) then
+            if reset_deser = '1' then
+                dout <= (others => '0');
 
             else
-                if (sel = "000") then
+                if sel = "000" then
                     dout(11 downto 10) <= din;
+                    dout_buf((11 - bit_depth) downto 0) <= dout(11 downto bit_depth);
 
-                elsif (sel = "001") then
+                elsif sel = "001" then
                     dout(9 downto 8) <= din;
 
-                elsif (sel = "010") then
+                elsif sel = "010" then
                     dout(7 downto 6) <= din;
 
-                elsif (sel = "011") then
+                elsif sel = "011" then
                     dout(5 downto 4) <= din;
 
-                elsif (sel = "100") then
+                elsif sel = "100" then
                     dout(3 downto 2) <= din;
-
-                elsif (sel = "101") then
+                          
+                elsif sel = "101" then
                     dout(1 downto 0) <= din;
 
                 end if;
             end if;
         end if;
     end process;
-
-    clk_out_deser <= clk_out_sig_del;
-
-    ----------------------------------------------------------------------------
-    -- slow_clk_del_proc : Delays output clock signal by one/bit-depth cycles
-    ----------------------------------------------------------------------------
-    slow_clk_del_proc : process(clk_in_deser)
-    begin
-        if rising_edge(clk_in_deser) then
-            if clk_out_sig = '1' then
-                clk_out_sig_del <= '1';
-
-            elsif clk_out_sig = '0' then
-                clk_out_sig_del <= '0';
-
-            end if;
-        end if;
-    end process;
-
+     
+    dout_deser <= dout_buf;
+     
     ----------------------------------------------------------------------------
     -- slow_clk_gen_proc : Generates slow speed output clock
     ----------------------------------------------------------------------------
-    slow_clk_gen_proc : process(clk_in_deser)
+    slow_clk_gen_proc : process (clk_in_deser)
     begin
         if rising_edge(clk_in_deser) then
             if reset_deser = '1' then
                 clk_out_sig <= '0';
 
             else
-                if (counter = "101" - depth_sel(2 downto 1)) then
+                if counter = "101" - depth_sel(2 downto 1) then
                     clk_out_sig <= '1';
 
-                elsif (counter = "011" - depth_sel(2)) then
+                elsif counter = "011" - depth_sel(2) then
                     clk_out_sig <= '0';
 
                 end if;
             end if;
         end if;
     end process;
-
-    ---------------------------------------------------------------------------- 
-    -- data_buf_proc : Sampling of output data after word formation 
-    ----------------------------------------------------------------------------
-    data_buf_proc : process(clk_out_sig_del)
-    begin
-        if (rising_edge(clk_out_sig_del)) then
-            if reset_deser = '1' then
-                dout_buf <= (others => '0');
-
-            else
-                dout_buf(11 - bit_depth downto 0) <= dout(11 downto bit_depth);
-
-            end if;
-        end if;
-    end process;
-
-    dout_deser <= dout_buf;
+   clk_out_deser <= clk_out_sig; 
 
 end behavioral;
