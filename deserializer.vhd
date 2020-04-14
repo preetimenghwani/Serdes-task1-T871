@@ -50,7 +50,7 @@ architecture behavioral of top is
     signal ddr             : std_logic_vector(1 downto 0);
     signal ddr0            : std_logic;
     signal din             : std_logic_vector(1 downto 0);
-    signal test_pattern  : std_logic_vector(11 downto 0) := "101110101111";
+    signal test_pattern    : std_logic_vector(11 downto 0) := "101110101111";
 
 begin
 
