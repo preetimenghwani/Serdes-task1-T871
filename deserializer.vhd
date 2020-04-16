@@ -25,7 +25,7 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 
-entity top is
+entity deserializer is
     port (
         clk_in_deser  : in  std_logic := '0';
         reset_deser   : in  std_logic := '0';
@@ -35,9 +35,9 @@ entity top is
         link_trained  : out std_logic := '0'; -- assigned '1' when bit slip is adjusted
         dout_deser    : out std_logic_vector(11 downto 0) := (others => '0')
     );
-end top;
+end deserializer;
 
-architecture behavioral of top is
+architecture behavioral of deserializer is
 
     signal dout            : std_logic_vector(11 downto 0) := (others => '0');
     signal dout_buf        : std_logic_vector(11 downto 0) := (others => '0');
@@ -184,3 +184,6 @@ begin
 	 clk_out_deser <= clk_out_sig; 
 
 end behavioral;
+
+
+
