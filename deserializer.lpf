@@ -1,9 +1,9 @@
 LOCATE COMP "clk_in_deser" SITE "42" ;
-LOCATE COMP " reset_deser " SITE "20" ;
+LOCATE COMP "reset_deser " SITE "20" ;
 LOCATE COMP "din_deser" SITE "45" ;
 LOCATE COMP " depth_sel" SITE "43" ;
-LOCATE COMP " clk_out_deser" SITE "29" ;
+LOCATE COMP "clk_out_deser" SITE "29" ;
 LOCATE COMP "link_trained" SITE "21" ;
-LOCATE COMP " dout_deser" SITE "24" ;
+LOCATE COMP "dout_deser" SITE "24" ;
 
 IOBUF ALLPORTS IO_TYPE=LVCMOS33 ;
