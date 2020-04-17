@@ -1,2 +1,10 @@
 # Serdes-task1-T871
-The task was to implement code for a serial to parallel converter (SERDES) which can be switched between 8, 10 and 12 bit.The current serial to parallel converter works properly for 600MHZ clock speed(DDR) in post-route simulation of Zynq-7020 FPGA.
+Implemented a deserializer( serial to parallel convertor ) with the following features:
+1. Supports bit depth of 8bit, 10bit, 12bit
+   depth_sel="000" => 12bit
+   depth_sel="010" => 10bit
+   depth_sel="100" => 12bit
+2. Adjusted Bitslip
+   A test pattern "OxBAF" is used for adjusting bitslip, as soon as the model is ready to trained and ready to take input from    the user the link_trained signal switches to '1'
+3. DDR Implementation
+   The current deserializer works properly for 600Mhz clock speed(DDR) in post-route simulation of Zynq-7020 FPGA with            serializer in testbench.
